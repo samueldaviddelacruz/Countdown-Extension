@@ -8,6 +8,8 @@ var counterController = function($interval,$scope){
     var counter = this;
     var timeinterval;
 
+    counter.warningThreshold = 1800000;
+
     function init(){
         var queryInfo = {
             active: true,
@@ -30,7 +32,6 @@ var counterController = function($interval,$scope){
                     counter.goalDate = new Date(goal.goalMilis);
                     initializeClock(counter.goalDate);
             })
-
 
         });
     }
@@ -68,9 +69,16 @@ var counterController = function($interval,$scope){
         if (angular.isDefined(timeinterval)) {
             $interval.cancel(timeinterval);
             timeinterval = undefined;
+           //counter.goalDate = undefined;
         };
     }
-
+    function checkWarningThreshHold(t){
+        if(t.total <= counter.warningThreshold){
+            counter.timeWarning = "Time is running out!";
+            return;
+        }
+        counter.timeWarning = "";
+    }
     function initializeClock(endtime) {
         //clear interval if exists, in case a new goal date is selected
         stopCounter();
@@ -79,16 +87,24 @@ var counterController = function($interval,$scope){
             var t = getTimeRemaining(endtime);
             if (t.total <= 0) {
                 stopCounter();
-            }else{
-                counter.daysSpan = t.days;
-                counter.hoursSpan = ('0' + t.hours).slice(-2);
-                counter.minutesSpan = ('0' + t.minutes).slice(-2);
-                counter.secondsSpan = ('0' + t.seconds).slice(-2);
+                return;
             }
+            checkWarningThreshHold(t);
+            updateCounter(t);
+
         };
+
         updateClock();
         timeinterval = $interval(updateClock, 1000);
     }
+    function updateCounter(t) {
+        counter.daysSpan = t.days;
+        counter.hoursSpan = ('0' + t.hours).slice(-2);
+        counter.minutesSpan = ('0' + t.minutes).slice(-2);
+        counter.secondsSpan = ('0' + t.seconds).slice(-2);
+    };
+
+
     function getTomorrowDate(){
         var tomorrow = new Date();
         tomorrow.setDate(tomorrow.getDate() + 1);
@@ -98,29 +114,28 @@ var counterController = function($interval,$scope){
         var tomorrow = getTomorrowDate();
         counter.tomorrowDate = tomorrow;
     }
-    function setGoalLabel(text){
-        document.getElementById("myGoalLabel").innerHTML = text;
-    }
 
     counter.setGoalTime = () => {
 
-        if(counter.goalText && counter.goalDate ){
-
-            //counter.goalDate.setHours(24);
-            console.log(counter.goalDate);
+        if(!isGoalSet()){
+            counter.goalnotSetMessage = "Please Set a title and a date for your goal!";
+            return;
+        }
+            counter.goalnotSetMessage = "";
             saveGoal(counter.goalText,counter.goalDate,function(){
                 console.log('Success');
-
                 counter.goalTitle = counter.goalText;
-
                 initializeClock(counter.goalDate);
 
             });
-        }
     };
+
+    function isGoalSet(){
+        return counter.goalText && counter.goalDate;
+    }
 
     init();
 
-};
+};;
 
 app.controller('counterController',counterController);

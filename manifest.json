@@ -3,7 +3,7 @@
 
   "name": "Countown counter",
   "description": "This extension shows a counter to a given event/goal",
-  "version": "1.0",
+  "version": "1.1",
 
   "browser_action": {
     "default_popup": "popup.html"

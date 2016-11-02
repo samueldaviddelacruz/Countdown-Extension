@@ -8,13 +8,14 @@
 <head>
     <title>Countdown!</title>
     <link href="css/styles.css" rel="stylesheet"/>
-
+    <script src="js/angular.min.js"></script>
+    <script src="js/app.js"></script>
     <!--<script src="js/counter.js"></script>-->
 
 </head>
 <body ng-controller="counterController as counter" ng-cloak>
 
-<h1>{{ counter.goalTitle}}</h1>
+
 <div ng-hide="counter.goalDate"><h2>You have no goal set, why don't you try to add one?</h2></div>
 <label class="smalltext">Whats your next goal? </label> <br/><input ng-model="counter.goalText" type="text" />
 <br />
@@ -28,8 +29,8 @@
 
 
 
-<div ng-show="counter.goalDate"><h2>Time remaining :</h2></div>
-<div id="clockdiv" ng-show="counter.goalDate">
+<div ng-show="counter.goalDate"><h2>You Have</h2></div>
+<div id="clockdiv" ng-class="{red:counter.timeWarning}" ng-show="counter.goalDate">
     <div>
         <span class="days">{{counter.daysSpan}}</span>
         <div class="smalltext">Days</div>
@@ -47,9 +48,13 @@
         <div class="smalltext">Seconds</div>
     </div>
 </div>
+<div ng-show="counter.goalDate"><h2>left until</h2></div>
+<h1>{{ counter.goalTitle}}</h1>
+<div ng-show="counter.goalDate"><h2>Is complete</h2></div>
+<h2>{{counter.goalnotSetMessage}}</h2>
+<h2>{{counter.timeWarning}}</h2>
 
-<script src="js/angular.min.js"></script>
-<script src="js/app.js"></script>
+
 </body>
 </html>
 
