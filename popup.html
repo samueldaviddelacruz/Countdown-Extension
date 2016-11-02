@@ -1,0 +1,55 @@
+<!doctype html>
+<!--
+ This page is shown when the extension button is clicked, because the
+ "browser_action" field in manifest.json contains the "default_popup" key with
+ value "popup.html".
+ -->
+<html ng-app="counterApp">
+<head>
+    <title>Countdown!</title>
+    <link href="css/styles.css" rel="stylesheet"/>
+
+    <!--<script src="js/counter.js"></script>-->
+
+</head>
+<body ng-controller="counterController as counter" ng-cloak>
+
+<h1>{{ counter.goalTitle}}</h1>
+<div ng-hide="counter.goalDate"><h2>You have no goal set, why don't you try to add one?</h2></div>
+<label class="smalltext">Whats your next goal? </label> <br/><input ng-model="counter.goalText" type="text" />
+<br />
+<label class="smalltext">Give it a completion date! </label>
+<br />
+<input ng-model="counter.goalDate" type="date" min="{{counter.tomorrowDate | date:'yyyy-MM-dd'}}" />
+<br />
+<button  type="button" ng-click="counter.setGoalTime()" value="Set Goal">Set Goal</button>
+<br />
+
+
+
+
+<div ng-show="counter.goalDate"><h2>Time remaining :</h2></div>
+<div id="clockdiv" ng-show="counter.goalDate">
+    <div>
+        <span class="days">{{counter.daysSpan}}</span>
+        <div class="smalltext">Days</div>
+    </div>
+    <div>
+        <span class="hours">{{counter.hoursSpan}}</span>
+        <div class="smalltext">Hours</div>
+    </div>
+    <div>
+        <span class="minutes">{{counter.minutesSpan}}</span>
+        <div class="smalltext">Minutes</div>
+    </div>
+    <div>
+        <span class="seconds">{{counter.secondsSpan}}</span>
+        <div class="smalltext">Seconds</div>
+    </div>
+</div>
+
+<script src="js/angular.min.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
+
