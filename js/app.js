@@ -31,6 +31,7 @@ var counterController = function($interval,$scope){
                 }
                     counter.goalDate = new Date(goal.goalMilis);
                     initializeClock(counter.goalDate);
+                    document.getElementById('body').style.display='block'
             })
 
         });
@@ -95,7 +96,7 @@ var counterController = function($interval,$scope){
         };
 
         updateClock();
-        timeinterval = $interval(updateClock, 1000);
+        timeinterval = $interval(updateClock, 100);
     }
     function updateCounter(t) {
         counter.daysSpan = t.days;
