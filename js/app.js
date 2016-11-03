@@ -4,36 +4,35 @@
 var app = angular.module('counterApp', []);
 
 
-var counterController = function($interval,$scope){
+var counterController = function ($interval, $scope) {
     var counter = this;
     var timeinterval;
 
     counter.warningThreshold = 1800000;
 
-    function init(){
+    function init() {
         var queryInfo = {
             active: true,
             currentWindow: true
         };
-        chrome.tabs.query(queryInfo,function(tabs){
+        chrome.tabs.query(queryInfo, function (tabs) {
 
 
             setMinDateTomorrow();
 
-            getSavedGoal(function(goal){
+            getSavedGoal(function (goal) {
 
                 counter.goalTitle = goal.title;
 
-                if(goal.goalMilis === 0){
+                if (goal.goalMilis === 0) {
                     counter.goalDate = undefined;
+                    //counter.timeWarning = "";
                     $scope.$apply();
                     return;
                 }
-                    counter.goalDate = new Date(goal.goalMilis);
-                    initializeClock(counter.goalDate);
-                    document.getElementById('body').style.display='block'
+                counter.goalDate = new Date(goal.goalMilis);
+                initializeClock(counter.goalDate);
             })
-
         });
     }
 
@@ -55,31 +54,33 @@ var counterController = function($interval,$scope){
         };
     }
 
-    function getSavedGoal(callback){
+    function getSavedGoal(callback) {
 
-        chrome.storage.sync.get({title:'No Goal Set!',goalMilis:0}, callback);
+        chrome.storage.sync.get({title: 'No Goal Set!', goalMilis: 0}, callback);
 
     }
-    function saveGoal(title,date,callback){
 
-        chrome.storage.sync.set({title:title,goalMilis:date.getTime()},callback);
+    function saveGoal(title, date, callback) {
+
+        chrome.storage.sync.set({title: title, goalMilis: date.getTime()}, callback);
     }
 
 
-    function stopCounter(){
+    function stopCounter() {
         if (angular.isDefined(timeinterval)) {
             $interval.cancel(timeinterval);
             timeinterval = undefined;
-           //counter.goalDate = undefined;
-        };
-    }
-    function checkWarningThreshHold(t){
-        if(t.total <= counter.warningThreshold){
-            counter.timeWarning = "Time is running out!";
-            return;
         }
-        counter.timeWarning = "";
     }
+
+    function checkWarningThreshHold(t) {
+        counter.timeWarning = isTotalTimeRunningOut(t)?"Time is running out!":"";
+    }
+
+    function isTotalTimeRunningOut(t) {
+        return t.total <= counter.warningThreshold;
+    }
+
     function initializeClock(endtime) {
         //clear interval if exists, in case a new goal date is selected
         stopCounter();
@@ -87,17 +88,26 @@ var counterController = function($interval,$scope){
         function updateClock() {
             var t = getTimeRemaining(endtime);
             if (t.total <= 0) {
+
+
+                resetGoalAndTitle();
                 stopCounter();
+
                 return;
             }
             checkWarningThreshHold(t);
             updateCounter(t);
-
         };
 
         updateClock();
         timeinterval = $interval(updateClock, 100);
     }
+    function resetGoalAndTitle(){
+        counter.timeWarning = counter.goalDate?"Time Over!":"";
+        counter.goalDate = undefined;
+        counter.goalTitle = "";
+    }
+
     function updateCounter(t) {
         counter.daysSpan = t.days;
         counter.hoursSpan = ('0' + t.hours).slice(-2);
@@ -106,37 +116,36 @@ var counterController = function($interval,$scope){
     };
 
 
-    function getTomorrowDate(){
+    function setMinDateTomorrow() {
+        var tomorrow = getTomorrowDate();
+        counter.tomorrowDate = tomorrow;
+    };
+    function getTomorrowDate() {
         var tomorrow = new Date();
         tomorrow.setDate(tomorrow.getDate() + 1);
         return tomorrow;
-    }
-    function setMinDateTomorrow(){
-        var tomorrow = getTomorrowDate();
-        counter.tomorrowDate = tomorrow;
-    }
+    };
 
     counter.setGoalTime = () => {
 
-        if(!isGoalSet()){
+        if (!isGoalSet()) {
             counter.goalnotSetMessage = "Please Set a title and a date for your goal!";
             return;
         }
-            counter.goalnotSetMessage = "";
-            saveGoal(counter.goalText,counter.goalDate,function(){
-                console.log('Success');
-                counter.goalTitle = counter.goalText;
-                initializeClock(counter.goalDate);
-
-            });
+        counter.goalnotSetMessage = "";
+        saveGoal(counter.goalText, counter.goalDate, function () {
+            console.log('Success');
+            counter.goalTitle = counter.goalText;
+            initializeClock(counter.goalDate);
+        });
     };
 
-    function isGoalSet(){
+    function isGoalSet() {
         return counter.goalText && counter.goalDate;
     }
 
     init();
+};
+;
 
-};;
-
-app.controller('counterController',counterController);
+app.controller('counterController', counterController);

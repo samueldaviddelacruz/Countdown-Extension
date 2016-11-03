@@ -9,22 +9,30 @@
     <title>Countdown!</title>
     <link href="css/styles.css" rel="stylesheet"/>
     <script src="js/angular.min.js"></script>
+
     <script src="js/app.js"></script>
     <!--<script src="js/counter.js"></script>-->
 
 </head>
-<body id="body" ng-controller="counterController as counter" style="display: none" ng-cloak>
+<body id="body" ng-controller="counterController as counter" ng-cloak>
 
+{{counter.showOptions?"Hide Options":"Show Options"}}<input type="checkbox" ng-model="counter.showOptions" aria-label="Toggle ngHide"><br/>
 
 <div ng-hide="counter.goalDate"><h2>You have no goal set, why don't you try to add one?</h2></div>
-<label class="smalltext">Whats your next goal? </label> <br/><input ng-model="counter.goalText" type="text" />
-<br />
-<label class="smalltext">Give it a completion date! </label>
-<br />
-<input ng-model="counter.goalDate" type="date" min="{{counter.tomorrowDate | date:'yyyy-MM-dd'}}" />
-<br />
-<button  type="button" ng-click="counter.setGoalTime()" value="Set Goal">Set Goal</button>
-<br />
+<div class="animate-show" ng-show="counter.showOptions">
+
+
+    <label class="smalltext">Whats your next goal? </label> <br/><input ng-model="counter.goalText" type="text" />
+    <br />
+    <label class="smalltext">Give it a completion date! </label>
+    <br />
+    <input ng-model="counter.goalDate" type="date" min="{{counter.tomorrowDate | date:'yyyy-MM-dd'}}" />
+    <br />
+    <button  type="button" ng-click="counter.setGoalTime()" value="Set Goal">Set Goal</button>
+    <br />
+
+</div>
+
 
 
 
